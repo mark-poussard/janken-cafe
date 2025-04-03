@@ -1,0 +1,29 @@
+@use 'sass:color';
+
+// Colors
+$primary-color: #61dafb;
+$secondary-color: #282c34;
+$text-color: #ffffff;
+$text-color-dark: #333;
+$background-color: #f4f4f4;
+$border-color: #ccc;
+$error-color: #dc3545;
+$success-color: #28a745;
+$system-message-color: #6c757d;
+$button-bg: $primary-color;
+$button-text: $text-color-dark;
+$button-hover-bg: color.scale($primary-color, $lightness: -10%);
+
+// Fonts
+$base-font-family: 'Arial', sans-serif;
+$heading-font-family: 'Georgia', serif;
+
+// Spacing
+$base-padding: 15px;
+$base-margin: 15px;
+$border-radius: 5px;
+
+// Breakpoints
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;

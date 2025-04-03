@@ -1,0 +1,93 @@
+@use '../variables';
+@use 'sass:color';
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: variables.$text-color-dark;
+
+  h3 {
+    text-align: center;
+    margin-bottom: calc(variables.$base-margin / 2);
+    font-family: variables.$heading-font-family;
+    border-bottom: 1px solid variables.$border-color;
+    padding-bottom: calc(variables.$base-padding / 2);
+  }
+
+  .message-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: calc(variables.$base-padding / 2) variables.$base-padding;
+    margin-bottom: variables.$base-margin;
+    border: 1px solid variables.$border-color;
+    background-color: white;
+    border-radius: variables.$border-radius;
+
+    .message {
+      margin-bottom: calc(variables.$base-margin / 2);
+      padding: calc(variables.$base-padding / 2);
+      border-radius: variables.$border-radius;
+      max-width: 80%;
+      word-wrap: break-word;
+
+      p {
+        margin: 0;
+        font-size: 0.95em;
+      }
+
+      &.my {
+        background-color: color.scale(variables.$primary-color, $lightness: 30%);
+        margin-left: auto;
+        text-align: right;
+      }
+
+      &.other {
+        background-color: color.scale(variables.$border-color, $lightness: 10%);
+        margin-right: auto;
+        text-align: left;
+      }
+
+      &.system {
+        background-color: transparent;
+        color: variables.$system-message-color;
+        font-style: italic;
+        text-align: center;
+        font-size: 0.85em;
+        max-width: 100%;
+      }
+    }
+  }
+
+  .message-input {
+    display: flex;
+    gap: calc(variables.$base-margin / 2);
+
+    input[type="text"] {
+      flex-grow: 1;
+      padding: calc(variables.$base-padding / 2);
+      border: 1px solid variables.$border-color;
+      border-radius: variables.$border-radius;
+      font-size: 1em;
+      &:focus {
+        outline: none;
+        border-color: variables.$primary-color;
+      }
+    }
+
+    button {
+      padding: calc(variables.$base-padding / 2) variables.$base-padding;
+      background-color: variables.$button-bg;
+      color: variables.$button-text;
+      border: none;
+      border-radius: variables.$border-radius;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: variables.$button-hover-bg;
+      }
+    }
+  }
+}

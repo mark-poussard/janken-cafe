@@ -1,0 +1,51 @@
+@use '../variables';
+@use 'sass:color';
+
+.welcome-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: variables.$base-padding * 2;
+  text-align: center;
+  background-color: color.scale(variables.$secondary-color, $lightness: 15%);
+  border-radius: variables.$border-radius;
+  color: variables.$text-color;
+  min-height: 250px;
+
+  h2 {
+    font-family: variables.$heading-font-family;
+    margin-bottom: variables.$base-margin;
+  }
+
+  p {
+    margin-bottom: calc(variables.$base-margin / 2);
+  }
+
+  .status-info {
+    margin: variables.$base-margin 0 calc(variables.$base-margin * 2);
+    font-size: 1.1em;
+    min-height: 1.5em;
+  }
+
+  .join-button {
+    padding: variables.$base-padding calc(variables.$base-padding * 1.5);
+    font-size: 1.3em;
+    background-color: variables.$success-color;
+    color: variables.$text-color;
+    border: none;
+    border-radius: variables.$border-radius;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: color.scale(variables.$success-color, $lightness: -10%);
+    }
+
+    &:disabled {
+      background-color: color.scale(variables.$success-color, $lightness: 10%);
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+  }
+}

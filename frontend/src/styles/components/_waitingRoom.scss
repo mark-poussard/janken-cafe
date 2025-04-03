@@ -1,0 +1,55 @@
+@use '../variables';
+@use 'sass:color';
+
+.waiting-room {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: variables.$base-padding * 2;
+  min-height: 200px;
+  text-align: center;
+  background-color: color.scale(variables.$secondary-color, $lightness: 10%);
+  border-radius: variables.$border-radius;
+  color: variables.$text-color;
+
+  .wait-message {
+    font-size: 1.2em;
+    margin-bottom: variables.$base-margin * 2;
+  }
+
+  .spinner {
+    border: 4px solid rgba(variables.$text-color, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border-left-color: variables.$primary-color;
+    margin-bottom: variables.$base-margin;
+
+    animation: spin 1s linear infinite;
+  }
+
+  button {
+    padding: calc(variables.$base-padding / 2) variables.$base-padding;
+    background-color: variables.$button-bg;
+    color: variables.$button-text;
+    border: none;
+    border-radius: variables.$border-radius;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: variables.$button-hover-bg;
+    }
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

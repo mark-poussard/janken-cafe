@@ -1,0 +1,78 @@
+@use '../variables';
+@use 'sass:color';
+
+.game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: variables.$text-color-dark;
+
+  h2 {
+    margin-bottom: variables.$base-margin;
+    font-family: variables.$heading-font-family;
+  }
+
+  .score-board {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: variables.$base-margin;
+    padding: calc(variables.$base-padding / 2);
+    background-color: color.scale(variables.$border-color, $lightness: 15%);
+    border-radius: variables.$border-radius;
+
+    span {
+      font-weight: bold;
+    }
+  }
+
+  .game-status {
+    min-height: 2.5em;
+    margin-bottom: variables.$base-margin;
+    font-style: italic;
+    text-align: center;
+
+    .result {
+        font-weight: bold;
+        &.win { color: variables.$success-color; }
+        &.loss { color: variables.$error-color; }
+        &.tie { color: variables.$system-message-color; }
+    }
+  }
+
+  .choices {
+    display: flex;
+    gap: variables.$base-margin;
+
+    button {
+      padding: variables.$base-padding (variables.$base-padding * 1.5);
+      font-size: 1.2em;
+      border: 2px solid transparent;
+      border-radius: variables.$border-radius;
+      background-color: variables.$button-bg;
+      color: variables.$button-text;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+
+      &:hover:not(:disabled) {
+        background-color: variables.$button-hover-bg;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      }
+
+      &:disabled {
+        background-color: variables.$system-message-color;
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+
+      &.selected {
+          border-color: color.scale(variables.$button-bg, $lightness: -20%);
+          background-color: color.scale(variables.$button-bg, $lightness: 10%);
+          font-weight: bold;
+          cursor: default;
+      }
+    }
+  }
+}
