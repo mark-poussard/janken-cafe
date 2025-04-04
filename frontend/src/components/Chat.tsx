@@ -33,13 +33,15 @@ const Chat: React.FC<ChatProps> = ({ messages, onSendMessage }) => {
     return (
         <div className="chat">
             <h3>Chat</h3>
-            <div className="message-list">
-                {messages.map((msg, index) => (
-                    <div key={index} className={`message ${msg.type}`}>
-                        <p>{msg.text}</p>
-                    </div>
-                ))}
-                <div ref={messagesEndRef} />
+            <div className="message-list-area">
+                <div className="message-list">
+                    {messages.map((msg, index) => (
+                        <div key={index} className={`message ${msg.type}`}>
+                            <p>{msg.text}</p>
+                        </div>
+                    ))}
+                    <div ref={messagesEndRef} />
+                </div>
             </div>
             <form className="message-input" onSubmit={handleSubmit}>
                 <input

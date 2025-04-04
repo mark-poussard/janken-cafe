@@ -4,6 +4,9 @@
 .cafe-table {
   position: relative;
   padding-top: 50px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 
   .leave-button {
     position: absolute;
@@ -24,6 +27,7 @@
   }
 
   .table-layout {
+    flex: 1;
     display: flex;
     flex-direction: row;
     gap: variables.$base-margin * 2;

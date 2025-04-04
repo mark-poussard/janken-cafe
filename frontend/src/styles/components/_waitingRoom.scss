@@ -2,6 +2,7 @@
 @use 'sass:color';
 
 .waiting-room {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;

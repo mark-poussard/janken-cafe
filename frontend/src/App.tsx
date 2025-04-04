@@ -3,6 +3,7 @@ import WelcomeScreen from './components/WelcomeScreen';
 import WaitingRoom from './components/WaitingRoom';
 import CafeTable from './components/CafeTable';
 import useWebSocket from './hooks/useWebSocket';
+import './App.scss';
 
 const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL || 'wss://YOUR_WEBSOCKET_API_ID.execute-api.us-east-1.amazonaws.com/dev';
 
@@ -163,7 +164,14 @@ function App() {
         <div className="app-container">
              {showDisconnectedMessage && <div className="disconnect-banner">Connection lost. Please wait or refresh.</div>}
             <h1>Janken Cafe</h1>
-            {renderContent()}
+            <div className="content-screen-area">
+                <div className="content-screen">
+                    {renderContent()}
+                </div>
+            </div>
+            <footer>
+                <p>A project by <a href="https://github.com/mark-poussard">Mark Poussard</a></p>
+            </footer>
         </div>
     );
 }
