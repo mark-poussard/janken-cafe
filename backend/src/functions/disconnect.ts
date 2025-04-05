@@ -1,8 +1,8 @@
 import { APIGatewayProxyWebsocketHandlerV2 } from 'aws-lambda';
-import { DeleteCommand, GetCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
-import { ddbDocClient, connectionsTable } from '../lib/dynamoDb';
 import { sendMessageToClient } from '../lib/webSocketUtils';
-import { ConnectionItem, UserState } from '../lib/types';
+import { ConnectionItem } from '../lib/types';
+import { deleteConnection, getConnection, updateConnectionToIdle } from 'src/services/connectionTableService';
+import { deleteGame } from 'src/services/pairGameTableService';
 
 export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
     const connectionId = event.requestContext.connectionId;
@@ -10,13 +10,11 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
 
     try {
         // 1. Get user data to find partner if playing
-        const getCmd = new GetCommand({ TableName: connectionsTable, Key: { connectionId } });
-        const { Item } = await ddbDocClient.send(getCmd);
+        const { Item } = await getConnection(connectionId);
         const user = Item as ConnectionItem | undefined;
 
         // 2. Delete the user's connection record
-        const deleteCmd = new DeleteCommand({ TableName: connectionsTable, Key: { connectionId } });
-        await ddbDocClient.send(deleteCmd);
+        await deleteConnection(connectionId);
         console.log(`Connection ${connectionId} deleted.`);
 
         // 3. If the user was playing, notify the partner and set partner back to IDLE
@@ -24,34 +22,16 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
             const partnerId = user.partnerConnectionId;
             console.log(`User ${connectionId} was playing with ${partnerId}. Notifying partner and setting them to IDLE.`);
 
-            await sendMessageToClient(partnerId, { action: 'partnerLeft' });
-
-            const updateCmd = new UpdateCommand({
-                TableName: connectionsTable,
-                Key: { connectionId: partnerId },
-                UpdateExpression: 'SET #state = :newState, pairId = :newPairId REMOVE partnerConnectionId',
-                ExpressionAttributeNames: { '#state': 'state' },
-                ExpressionAttributeValues: {
-                    ':newState': 'IDLE' as UserState,
-                    ':newPairId': 'NONE',
-                    ':expectedPairId': user.pairId
-                },
-                ConditionExpression: 'pairId = :expectedPairId',
-            });
-            try {
-                await ddbDocClient.send(updateCmd);
-            } catch (error: any) {
-                if (error.name === 'ConditionalCheckFailedException') {
-                    console.warn(`Partner ${partnerId} state couldn't be reset to IDLE (perhaps they disconnected too or left).`);
-                } else {
-                    console.error(`Failed to update partner ${partnerId} state to IDLE:`, error);
-                }
-            }
+            await Promise.all([
+                deleteGame(user.pairId),
+                sendMessageToClient(partnerId, { action: 'partnerLeft' }),
+                updateConnectionToIdle(partnerId, user.pairId)
+            ]);
         }
 
         return { statusCode: 200, body: 'Disconnected.' };
-    } catch (err) {
-        console.error('Failed to handle disconnect:', err);
-        return { statusCode: 500, body: 'Failed to disconnect.' };
+    } catch (error : any) {
+        console.error('Failed to handle disconnect:', error);
+        return { statusCode: 500, body: JSON.stringify({message : 'Failed to disconnect.', error}) };
     }
 };

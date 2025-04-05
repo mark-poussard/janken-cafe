@@ -1,8 +1,19 @@
+@use 'styles/variables';
+@use 'sass:color';
+
 .app-container{
     flex: 1;
     width: calc(100% - 80px);
     display: flex;
     flex-direction: column;
+    >.disconnect-banner{
+        padding: 0.6em 1.2em;
+        text-align: center;
+        font-weight: bold;
+        color: variables.$error-color;
+        background-color: color.scale(variables.$border-color, $lightness: 15%);
+        border-radius: variables.$border-radius;
+    }
     >h1{
         text-align: center;
     }

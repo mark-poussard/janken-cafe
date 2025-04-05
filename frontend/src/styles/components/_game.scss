@@ -1,18 +1,22 @@
 @use '../variables';
 @use 'sass:color';
 
+$rock-color: #8686e3;
+$paper-color: rgb(68, 215, 68);
+$scissors-color: rgb(255, 50, 50);
+
 .game {
   display: flex;
   flex-direction: column;
   align-items: center;
   color: variables.$text-color-dark;
 
-  h2 {
+  >h2 {
     margin-bottom: variables.$base-margin;
     font-family: variables.$heading-font-family;
   }
 
-  .score-board {
+  >.score-board {
     display: flex;
     justify-content: space-around;
     width: 100%;
@@ -22,18 +26,18 @@
     background-color: color.scale(variables.$border-color, $lightness: 15%);
     border-radius: variables.$border-radius;
 
-    span {
+    >span {
       font-weight: bold;
     }
   }
 
-  .game-status {
+  >.game-status {
     min-height: 2.5em;
     margin-bottom: variables.$base-margin;
     font-style: italic;
     text-align: center;
 
-    .result {
+    >.result {
         font-weight: bold;
         &.win { color: variables.$success-color; }
         &.loss { color: variables.$error-color; }
@@ -41,22 +45,38 @@
     }
   }
 
-  .choices {
+  >.choices {
     display: flex;
     gap: variables.$base-margin;
 
-    button {
+    >button {
       padding: variables.$base-padding (variables.$base-padding * 1.5);
       font-size: 1.2em;
       border: 2px solid transparent;
       border-radius: variables.$border-radius;
-      background-color: variables.$button-bg;
       color: variables.$button-text;
       cursor: pointer;
       transition: all 0.2s ease-in-out;
+      &.rock{
+        background-color: $rock-color;
+      }
+      &.paper{
+        background-color: $paper-color;
+      }
+      &.scissors{
+        background-color: $scissors-color;
+      }
 
       &:hover:not(:disabled) {
-        background-color: variables.$button-hover-bg;
+        &.rock{
+          background-color: color.scale($rock-color, $lightness: -10%);
+        }
+        &.paper{
+          background-color: color.scale($paper-color, $lightness: -10%);
+        }
+        &.scissors{
+          background-color: color.scale($scissors-color, $lightness: -10%);
+        }
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
       }
@@ -68,10 +88,24 @@
       }
 
       &.selected {
-          border-color: color.scale(variables.$button-bg, $lightness: -20%);
-          background-color: color.scale(variables.$button-bg, $lightness: 10%);
+          &.rock{
+            border-color: color.scale($rock-color, $lightness: -20%);
+            background-color: color.scale($rock-color, $lightness: 10%);
+          }
+          &.paper{
+            border-color: color.scale($paper-color, $lightness: -20%);
+            background-color: color.scale($paper-color, $lightness: 10%);
+          }
+          &.scissors{
+            border-color: color.scale($scissors-color, $lightness: -20%);
+            background-color: color.scale($scissors-color, $lightness: 10%);
+          }
           font-weight: bold;
           cursor: default;
+      }
+
+      >.icon{
+        margin-right: 5px;
       }
     }
   }

@@ -1,8 +1,8 @@
-export type UserState = 'IDLE' | 'WAITING' | 'PLAYING';
+export type ConnectionState = 'IDLE' | 'WAITING' | 'PLAYING';
 
 export interface ConnectionItem {
     connectionId: string;
-    state: UserState;
+    state: ConnectionState;
     pairId: string; // Unique ID for the pair/table, or 'NONE' if waiting
     partnerConnectionId?: string;
     lastSeen: number; // For potential cleanup
@@ -14,7 +14,7 @@ export interface WebSocketMessage {
 }
 
 export interface ServerWebSocketMessage {
-    action: 'activeTablesUpdate' | 'paired' | 'partnerLeft' | 'returnedToIdle' | 'roundResult' | 'newMessage' | 'opponentMoved' | 'moveReceived' | 'error' | string; // Add new actions
+    action: 'activeTablesUpdate' | 'paired' | 'partnerLeft' | 'returnedToIdle' | 'roundResult' | 'newMessage' | 'opponentMoved' | 'error' | string; // Add new actions
     payload?: any;
 }
 
@@ -22,11 +22,18 @@ export interface ActiveTablesUpdatePayload {
     count: number;
 }
 
+export type JankenPlayMove = 'rock' | 'paper' | 'scissors';
 
-export interface PlayMovePayload {
-    move: 'rock' | 'paper' | 'scissors';
+export interface JankenPlayMovePayload {
+    move: JankenPlayMove;
 }
 
 export interface SendMessagePayload {
     message: string;
+}
+
+export interface JankenGameItem {
+    pairId: string;
+    connectionId: string;
+    move: JankenPlayMove;
 }

@@ -1,4 +1,6 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHand, faHandBackFist, faHandScissors } from '@fortawesome/free-solid-svg-icons';
 import '../styles/components/_game.scss';
 
 type Move = 'rock' | 'paper' | 'scissors';
@@ -45,9 +47,18 @@ const Game: React.FC<GameProps> = ({ onPlay, score, lastResult, opponentMadeMove
 
 
             <div className="choices">
-                <button onClick={() => onPlay('rock')} disabled={!!myMove} className={myMove === 'rock' ? 'selected' : ''}>Rock</button>
-                <button onClick={() => onPlay('paper')} disabled={!!myMove} className={myMove === 'paper' ? 'selected' : ''}>Paper</button>
-                <button onClick={() => onPlay('scissors')} disabled={!!myMove} className={myMove === 'scissors' ? 'selected' : ''}>Scissors</button>
+                <button onClick={() => onPlay('rock')} disabled={!!myMove} className={["rock", (myMove === 'rock' ? 'selected' : '')].join(" ")}>
+                    <FontAwesomeIcon className="icon" icon={faHandBackFist} />
+                    Rock
+                </button>
+                <button onClick={() => onPlay('paper')} disabled={!!myMove} className={["paper", (myMove === 'paper' ? 'selected' : '')].join(" ")}>
+                    <FontAwesomeIcon className="icon" icon={faHand} />
+                    Paper
+                </button>
+                <button onClick={() => onPlay('scissors')} disabled={!!myMove} className={["scissors", (myMove === 'scissors' ? 'selected' : '')].join(" ")}>
+                    <FontAwesomeIcon className="icon" icon={faHandScissors} />
+                    Scissors
+                </button>
             </div>
         </div>
     );

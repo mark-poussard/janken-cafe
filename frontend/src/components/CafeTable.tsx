@@ -28,10 +28,6 @@ const CafeTable: React.FC<CafeTableProps> = ({ sendMessage, lastMessage, onLeave
     useEffect(() => {
         if (lastMessage) {
             switch (lastMessage.action) {
-                 case 'moveReceived':
-                      setMyMove(lastMessage.payload.move);
-                      setOpponentMadeMove(false);
-                      break;
                  case 'opponentMoved':
                       setOpponentMadeMove(true);
                       break;
@@ -59,6 +55,8 @@ const CafeTable: React.FC<CafeTableProps> = ({ sendMessage, lastMessage, onLeave
 
     const handlePlay = (move: 'rock' | 'paper' | 'scissors') => {
         if (myMove) return;
+        setMyMove(move);
+        setOpponentMadeMove(false);
         sendMessage({ action: 'playMove', payload: { move } });
     };
 
@@ -77,7 +75,7 @@ const CafeTable: React.FC<CafeTableProps> = ({ sendMessage, lastMessage, onLeave
                         score={score}
                         lastResult={lastGameResult}
                         opponentMadeMove={opponentMadeMove}
-                         myMove={myMove}
+                        myMove={myMove}
                     />
                 </div>
                 <div className="chat-area">

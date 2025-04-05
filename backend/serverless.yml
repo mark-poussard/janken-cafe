@@ -10,6 +10,7 @@ provider:
   region: us-east-1
   environment:
     CONNECTIONS_TABLE: ${self:service}-connections-${self:provider.stage}
+    PAIR_GAME_TABLE: ${self:service}-pair-game-${self:provider.stage}
     WEBSOCKET_API_ID: # This will be populated after first deploy or referenced via CloudFormation outputs
       Ref: WebsocketsApi # Reference to the API Gateway WebSocket API created below
     WEBSOCKET_API_ENDPOINT: # Construct the endpoint URL
@@ -32,8 +33,9 @@ provider:
             - dynamodb:UpdateItem
             - dynamodb:Query 
           Resource:
-            - Fn::GetAtt: [ConnectionsTable, Arn] 
+            - Fn::GetAtt: [ConnectionsTable, Arn]
             - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ConnectionsTable}/index/StatePairIdIndex # GSI ARN
+            - Fn::GetAtt: [PairGameTable, Arn]
         - Effect: Allow
           Action:
             - execute-api:ManageConnections
@@ -42,8 +44,8 @@ provider:
               - ':'
               - - arn:aws:execute-api
                 - ${self:provider.region}
-                - '*' # Account ID
-                - ${self:provider.environment.WEBSOCKET_API_ID} # API ID
+                - ${aws:accountId}
+                - ${self:provider.environment.WEBSOCKET_API_ID}
                 - ${self:provider.stage}/POST/@connections/*
 
 functions:
@@ -65,7 +67,7 @@ functions:
 
 resources:
   Resources:
-    ConnectionsTable: # DynamoDB Table
+    ConnectionsTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:provider.environment.CONNECTIONS_TABLE}
@@ -73,8 +75,8 @@ resources:
           - AttributeName: connectionId
             AttributeType: S
           - AttributeName: state
-            AttributeType: S # 'WAITING', 'PLAYING'
-          - AttributeName: pairId # GSI for finding waiting users easily
+            AttributeType: S
+          - AttributeName: pairId
             AttributeType: S
         KeySchema:
           - AttributeName: connectionId
@@ -83,12 +85,23 @@ resources:
         GlobalSecondaryIndexes: # To efficiently find waiting users
           - IndexName: StatePairIdIndex
             KeySchema:
-              - AttributeName: state # Partition key for GSI
+              - AttributeName: state
                 KeyType: HASH
-              - AttributeName: pairId # Sort key for GSI (use a fixed value like 'NONE' for waiting)
+              - AttributeName: pairId
                 KeyType: RANGE
             Projection:
-              ProjectionType: KEYS_ONLY # Only need connectionId
+              ProjectionType: KEYS_ONLY
+    PairGameTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.PAIR_GAME_TABLE}
+        AttributeDefinitions:
+          - AttributeName: pairId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: pairId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
 
 plugins: 
   - serverless-offline

@@ -1,9 +1,8 @@
 import { APIGatewayProxyWebsocketHandlerV2 } from 'aws-lambda';
-import { GetCommand } from "@aws-sdk/lib-dynamodb";
-import { ddbDocClient, connectionsTable } from '../lib/dynamoDb';
 import { sendMessageToClient } from '../lib/webSocketUtils';
 import { WebSocketMessage, ConnectionItem } from '../lib/types';
 import { handlePlayMove, handleChatMessage, handleLeaveTable, handleJoinQueue, handleGetActiveTables } from '../services/gameService';
+import { getConnection } from 'src/services/connectionTableService';
 
 export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
     const connectionId = event.requestContext.connectionId;
@@ -16,8 +15,7 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
     try { message = JSON.parse(body); } catch (err) { return { statusCode: 400, body: 'Invalid JSON.' }; }
 
     try {
-        const getCmd = new GetCommand({ TableName: connectionsTable, Key: { connectionId } });
-        const { Item } = await ddbDocClient.send(getCmd);
+        const { Item } = await getConnection(connectionId);
         const user = Item as ConnectionItem | undefined;
 
         if (!user) {
@@ -46,10 +44,9 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
                 await sendMessageToClient(connectionId, { action: 'error', payload: { message: `Unknown action: ${message.action}` } });
         }
         return { statusCode: 200, body: 'Message processed.' };
-
-    } catch (err) {
-        console.error(`Failed to process message for ${connectionId}:`, err);
-        await sendMessageToClient(connectionId, { action: 'error', payload: { message: 'Failed to process message on server.' } });
-        return { statusCode: 500, body: 'Failed to process message.' };
+    } catch (error : any) {
+        console.error(`Failed to process message for ${connectionId}:`, error);
+        await sendMessageToClient(connectionId, { action: 'error', payload: { message: `Failed to process message for ${connectionId}.`, error, wsMessage : message } });
+        return { statusCode: 500, body: JSON.stringify({message : `Failed to process message for ${connectionId}.`, error, wsMessage : message}) };
     }
 };
