@@ -36,14 +36,14 @@ jobs:
         run: cd frontend
 
       - name: Install Dependencies
-      - run: npm install
+        run: npm install
 
       - name: Build (Master Branch)
-      - if: ${{ github.ref == 'refs/heads/master' }}
+        if: ${{ github.ref == 'refs/heads/master' }}
         run: npm run build
 
       - name: Build (Other Branches)
-      - if: ${{ github.ref != 'refs/heads/master' }}
+        if: ${{ github.ref != 'refs/heads/master' }}
         run: npm run build -- --config vite.config.branch.ts
 
       - name: Deploy
