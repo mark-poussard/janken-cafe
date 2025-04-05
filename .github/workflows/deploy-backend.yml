@@ -1,0 +1,67 @@
+name: Deploy Backend to AWS
+
+on:
+  push:
+    paths:
+      - backend/**
+    branches-ignore:
+      - gh-pages
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Cache backend node modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-backend-node-modules
+        with:
+          path: backend/node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
+          aws-region: us-east-1
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Determine Deployment Stage
+        id: stage_logic
+        run: |
+          BRANCH_NAME="${{ github.ref_name }}"
+          # Sanitize branch name for stage (replace '/' with '-')
+          SANITIZED_BRANCH_NAME=$(echo "$BRANCH_NAME" | tr '/' '-')
+
+          if [[ "$BRANCH_NAME" == "master" ]]; then
+            # Deploy 'master' branch to 'prod' stage (or choose your desired production stage name)
+            echo "DEPLOY_STAGE=prod" >> $GITHUB_ENV
+            echo "Deploying master branch to prod stage"
+          else
+            # Deploy other branches to a stage named after the sanitized branch name
+            echo "DEPLOY_STAGE=$SANITIZED_BRANCH_NAME" >> $GITHUB_ENV
+            echo "Deploying branch $BRANCH_NAME to $SANITIZED_BRANCH_NAME stage"
+          fi
+
+      - name: Deploy with Serverless Framework
+        working-directory: ./backend
+        run: npx serverless deploy --stage ${{ env.DEPLOY_STAGE }} --verbose

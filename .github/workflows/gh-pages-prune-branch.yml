@@ -1,0 +1,25 @@
+name: GitHub Pages - Prune deleted branch
+
+# Ref https://docs.github.com/en/webhooks/webhook-events-and-payloads#delete
+
+on:
+  delete:
+
+jobs:
+  deploy:
+    if: github.event.ref_type == 'branch'
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+
+      - run: git rm -r -- branch/${{ github.event.ref }}
+      - run: git config --global user.email "${{ github.actor }}@@users.noreply.github.com"
+      - run: git config --global user.name "${{ github.actor }}"
+      - run: git commit -m "Pruning deleted '${{ github.event.ref }}' branch"
+      - run: git push
