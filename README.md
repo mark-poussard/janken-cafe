@@ -18,7 +18,7 @@ The frontend is hosted on Github Pages and built using React and Typescript.
 
 Deploy the backend to a development environment on AWS.
 
-Before anything, you will need a to have local AWS credentials setup, Serverless can guide you through the setup, please check the [documentation|https://www.serverless.com/framework/docs/providers/aws/guide/credentials#recommended-using-local-credentials]
+Before anything, you will need a to have local AWS credentials setup, Serverless can guide you through the setup, please check the [Serverless documentation](https://www.serverless.com/framework/docs/providers/aws/guide/credentials#recommended-using-local-credentials)
 
 Once AWS credentials have been setup, you might want to modify the `serverless.yml` `provider.profile` to match the credential profile (default is `serverless-admin`)
 
