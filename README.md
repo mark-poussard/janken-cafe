@@ -30,6 +30,7 @@ npm run dev
 ### Deploying to production
 
 - Setup AWS Credentials through OIDC
+- Update .env.prod.yml to include your own origin where you plan on running the backend
 - Continuous Deployment through master branch
 
 ## Frontend
