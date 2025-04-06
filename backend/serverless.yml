@@ -22,7 +22,7 @@ provider:
           - ${self:provider.region}
           - '.amazonaws.com/'
           - ${self:provider.stage}
-    ALLOWED_ORIGINS: ${file(./serverless.vars.js):allowedOrigins}
+    ALLOWED_ORIGINS: ${file(.env.${opt:stage, 'dev'}.yml):ALLOWED_ORIGINS}
   iam: 
     role:
       statements:
