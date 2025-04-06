@@ -10,6 +10,10 @@ on:
 env:
   BRANCH_NAME: ${{ github.ref_name }}
 
+defaults:
+  run:
+    working-directory: ./frontend
+
 jobs:
   deploy:
     if: github.event.deleted == false
@@ -29,11 +33,8 @@ jobs:
       - name: Cache npm
         uses: actions/cache@v3
         with:
-          path: ~/frontend/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package.json') }}
-
-      - name: Navigate to Frontend Directory
-        run: cd frontend
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
 
       - name: Install Dependencies
         run: npm install
@@ -50,7 +51,7 @@ jobs:
         uses: mark-poussard/actions-gh-pages@v4.1.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: frontend/dist
+          publish_dir: ./dist
           publish_branch: gh-pages
           destination_dir: ${{ github.ref != 'refs/heads/master' && format('branch/{0}', github.ref_name) || '' }}
           keep_target_files: env,branch
