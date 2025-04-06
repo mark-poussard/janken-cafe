@@ -3,6 +3,7 @@ import { sendMessageToClient } from '../lib/webSocketUtils';
 import { WebSocketMessage, ConnectionItem } from '../lib/types';
 import { handlePlayMove, handleChatMessage, handleLeaveTable, handleJoinQueue, handleGetActiveTables } from '../services/gameService';
 import { getConnection } from 'src/services/connectionTableService';
+import { handleHeartbeat } from 'src/services/connectionService';
 
 export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
     const connectionId = event.requestContext.connectionId;
@@ -24,6 +25,9 @@ export const handler: APIGatewayProxyWebsocketHandlerV2 = async (event) => {
         }
 
         switch (message.action) {
+            case 'heartbeat':
+                await handleHeartbeat(user.connectionId);
+                break;
             case 'joinQueue':
                 await handleJoinQueue(user);
                 break;

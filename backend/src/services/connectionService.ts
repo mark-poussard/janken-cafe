@@ -1,6 +1,12 @@
 import { sendMessageToClient } from '../lib/webSocketUtils';
 import { v4 as uuidv4 } from 'uuid';
-import { getConnectionPair, updateConnectionToPlaying } from "./connectionTableService";
+import { getConnectionPair, updateConnectionLastSeen, updateConnectionToPlaying } from "./connectionTableService";
+
+export const handleHeartbeat = async (connectionId: string) => {
+    await Promise.all([
+        updateConnectionLastSeen(connectionId)
+    ]);
+}
 
 export const tryPairUsers = async (connectionId: string): Promise<void> => {
     const { Items } = await getConnectionPair(connectionId);

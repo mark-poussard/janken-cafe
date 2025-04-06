@@ -22,6 +22,7 @@ provider:
           - ${self:provider.region}
           - '.amazonaws.com/'
           - ${self:provider.stage}
+    ALLOWED_ORIGINS: ${file(./serverless.vars.js):allowedOrigins}
   iam: 
     role:
       statements:
@@ -49,6 +50,8 @@ provider:
                 - ${self:provider.stage}/POST/@connections/*
 
 functions:
+  connectionAuthorizer:
+    handler: src/functions/authorizeConnection.handler
   connect:
     handler: src/functions/connect.handler
     events:

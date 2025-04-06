@@ -19,10 +19,9 @@ type AppState =
 
 function App() {
     const [appState, setAppState] = useState<AppState>('INITIALIZING');
-    const [activeTableCount, setActiveTableCount] = useState<number | null>(0);
     const [showDisconnectedMessage, setShowDisconnectedMessage] = useState(false);
     const wsUrl = useMemo(() => WEBSOCKET_URL, []);
-    const activeTablesIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     const { sendMessage: rawSendMessage, lastMessage, connectionStatus } = useWebSocket(wsUrl);
     const sendMessage = useCallback((message: object) => {
@@ -33,19 +32,12 @@ function App() {
         }
     }, [rawSendMessage, connectionStatus]);
 
-    const requestActiveTables = useCallback(() => {
-        console.log("Requesting active table count...");
-        sendMessage({ action: 'getActiveTables' });
+    const sendHeartbeat = useCallback(() => {
+        sendMessage({ action: 'heartbeat' });
     }, [sendMessage]);
 
     useEffect(() => {
         console.log("Connection Status Changed:", connectionStatus);
-        if (activeTablesIntervalRef.current) {
-            clearInterval(activeTablesIntervalRef.current);
-            activeTablesIntervalRef.current = null;
-        }
-        setActiveTableCount(null);
-
         switch (connectionStatus) {
             case 'connecting':
                 setAppState('CONNECTING');
@@ -54,9 +46,7 @@ function App() {
             case 'connected':
                 setAppState('CONNECTED_IDLE');
                 setShowDisconnectedMessage(false);
-                // TODO : Show active tables feature
-                // requestActiveTables();
-                // activeTablesIntervalRef.current = setInterval(requestActiveTables, 60 * 1000); // Request every 60 seconds
+                heartbeatIntervalRef.current = setInterval(sendHeartbeat, 60 * 1000);
                 break;
             case 'disconnected':
             case 'error':
@@ -68,22 +58,18 @@ function App() {
         }
 
         return () => {
-            if (activeTablesIntervalRef.current) {
-                clearInterval(activeTablesIntervalRef.current);
-                activeTablesIntervalRef.current = null;
-                console.log("Cleared active tables interval.");
+            if (heartbeatIntervalRef.current) {
+                clearInterval(heartbeatIntervalRef.current);
+                heartbeatIntervalRef.current = null;
             }
         };
-    }, [connectionStatus, requestActiveTables]);
+    }, [connectionStatus]);
 
     // Incoming WebSocket messages
     useEffect(() => {
         if (lastMessage) {
             console.log("App received message:", lastMessage);
             switch (lastMessage.action) {
-                case 'activeTablesUpdate':
-                    setActiveTableCount(lastMessage.payload.count);
-                    break;
                 case 'paired':
                     console.log("Received 'paired' message.");
                     setAppState('PLAYING');
@@ -103,7 +89,7 @@ function App() {
                      break;
             }
         }
-    }, [lastMessage, appState, requestActiveTables]);
+    }, [lastMessage, appState]);
 
     const handleJoinQueue = () => {
         if (appState === 'CONNECTED_IDLE') {
@@ -136,13 +122,11 @@ function App() {
                 return <WaitingRoom message="Connecting to Janken Cafe..." showSpinner={true} />;
             case 'CONNECTED_IDLE':
                 return <WelcomeScreen
-                            activeTableCount={activeTableCount}
                             onJoinQueue={handleJoinQueue}
                             isJoining={false}
                         />;
              case 'JOINING_QUEUE':
                  return <WelcomeScreen
-                             activeTableCount={activeTableCount}
                              onJoinQueue={() => {}}
                              isJoining={true}
                          />;

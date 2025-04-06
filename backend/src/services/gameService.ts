@@ -1,6 +1,6 @@
 import { sendMessageToClient } from '../lib/webSocketUtils';
 import { ConnectionItem, JankenPlayMovePayload, SendMessagePayload } from '../lib/types';
-import { tryPairUsers } from './pairingService';
+import { tryPairUsers } from './connectionService';
 import { updateConnectionToWaiting, updateConnectionToIdle } from './connectionTableService';
 import { deleteGame, getGame, upsertGame } from './pairGameTableService';
 import { optimisticLock } from 'src/lib/optimisticLocking';

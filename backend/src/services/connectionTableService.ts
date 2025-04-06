@@ -30,6 +30,23 @@ export const getConnection = async (connectionId : string) => {
     }
 }
 
+export const updateConnectionLastSeen = async (connectionId: string): Promise<void> => {
+    const updateCommand = new UpdateCommand({
+        TableName: connectionsTable,
+        Key: { connectionId: connectionId },
+        UpdateExpression: 'SET lastSeen = :now',
+        ExpressionAttributeValues: {
+            ':now': Date.now(),
+        },
+    });
+    try {
+        await ddbDocClient.send(updateCommand);
+    } catch (error : any) {
+        console.error(`Failed to update ${connectionId} last seen`, error.name, error.message);
+        throw new NestedError(`Failed to update ${connectionId} last seen`, error);
+    }
+};
+
 export const updateConnectionToWaiting = async (connectionId : String) => {
     try {
         const updateCmd = new UpdateCommand({

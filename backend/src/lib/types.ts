@@ -9,12 +9,12 @@ export interface ConnectionItem {
 }
 
 export interface WebSocketMessage {
-    action: 'joinQueue' | 'getActiveTables' | 'playMove' | 'sendMessage' | 'leaveTable' | string;
+    action: 'joinQueue' | 'getActiveTables' | 'playMove' | 'sendMessage' | 'leaveTable' | 'heartbeat' | string;
     payload?: any;
 }
 
 export interface ServerWebSocketMessage {
-    action: 'activeTablesUpdate' | 'paired' | 'partnerLeft' | 'returnedToIdle' | 'roundResult' | 'newMessage' | 'opponentMoved' | 'error' | string; // Add new actions
+    action: 'activeTablesUpdate' | 'paired' | 'partnerLeft' | 'returnedToIdle' | 'roundResult' | 'newMessage' | 'opponentMoved' | 'heartbeat' | 'error' | string;
     payload?: any;
 }
 
