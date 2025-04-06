@@ -53,11 +53,9 @@ jobs:
           SANITIZED_BRANCH_NAME=$(echo "$BRANCH_NAME" | tr '/' '-')
 
           if [[ "$BRANCH_NAME" == "master" ]]; then
-            # Deploy 'master' branch to 'prod' stage (or choose your desired production stage name)
             echo "DEPLOY_STAGE=prod" >> $GITHUB_ENV
             echo "Deploying master branch to prod stage"
           else
-            # Deploy other branches to a stage named after the sanitized branch name
             echo "DEPLOY_STAGE=$SANITIZED_BRANCH_NAME" >> $GITHUB_ENV
             echo "Deploying branch $BRANCH_NAME to $SANITIZED_BRANCH_NAME stage"
           fi

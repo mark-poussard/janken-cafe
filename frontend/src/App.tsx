@@ -5,7 +5,7 @@ import CafeTable from './components/CafeTable';
 import useWebSocket from './hooks/useWebSocket';
 import './App.scss';
 
-const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL || 'wss://YOUR_WEBSOCKET_API_ID.execute-api.us-east-1.amazonaws.com/dev';
+const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL || 'wss://c8m902dg72.execute-api.us-east-1.amazonaws.com/prod';
 
 type AppState =
     | 'INITIALIZING'
