@@ -50,8 +50,6 @@ provider:
                 - ${self:provider.stage}/POST/@connections/*
 
 functions:
-  connectionAuthorizer:
-    handler: src/functions/authorizeConnection.handler
   connect:
     handler: src/functions/connect.handler
     events:
