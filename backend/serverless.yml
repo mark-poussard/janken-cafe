@@ -107,9 +107,11 @@ resources:
 plugins: 
   - serverless-offline
   - serverless-plugin-typescript
+  - serverless-plugin-log-retention
 
 custom: 
   serverless-offline:
     httpPort: 3001 
     websocketPort: 3002
     lambdaPort: 3003
+  logRetentionInDays: 1
